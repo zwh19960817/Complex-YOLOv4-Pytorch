@@ -91,6 +91,12 @@ if __name__ == '__main__':
     configs = parse_test_configs()
     configs.distributed = False  # For testing
 
+    # print(torch.cuda.is_available())
+    # print(torch.cuda.device_count())
+    # print(torch.cuda.current_device())
+    # print(torch.cuda.get_device_name())
+    # print(torch.cuda.get_device_capability(0))
+
     model = create_model(configs)
     model.print_network()
     print('\n\n' + '-*=' * 30 + '\n\n')
@@ -98,6 +104,8 @@ if __name__ == '__main__':
     device_string = 'cpu' if configs.no_cuda else 'cuda:{}'.format(configs.gpu_idx)
     
     assert os.path.isfile(configs.pretrained_path), "No file at {}".format(configs.pretrained_path)
+
+    # pretrained_dict = torch.load(configs.pretrained_path, map_location=device_string)
     model.load_state_dict(torch.load(configs.pretrained_path, map_location=device_string))
 
     configs.device = torch.device(device_string)
@@ -113,6 +121,7 @@ if __name__ == '__main__':
             input_imgs = imgs_bev.to(device=configs.device).float()
             t1 = time_synchronized()
             outputs = model(input_imgs)
+            print("img_paths:{}".format(img_paths))
             t2 = time_synchronized()
             detections = post_processing_v2(outputs, conf_thresh=configs.conf_thresh, nms_thresh=configs.nms_thresh)
 

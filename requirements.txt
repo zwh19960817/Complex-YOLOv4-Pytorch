@@ -6,3 +6,6 @@ numpy==1.22.0
 torchsummary==1.5.1
 tensorboard==2.2.1
 scikit-learn==0.22.2
+vtk==8.1.2
+mayavi==4.8.0
+pyside2==5.15.2.1

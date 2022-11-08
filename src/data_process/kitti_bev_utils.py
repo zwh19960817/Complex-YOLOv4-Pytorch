@@ -50,7 +50,7 @@ def makeBVFeature(PointCloud_, Discretization, bc):
     # Height Map
     heightMap = np.zeros((Height, Width))
 
-    _, indices = np.unique(PointCloud[:, 0:2], axis=0, return_index=True)
+    _, indices = np.unique(PointCloud[:, 0:2], axis=0, return_index=True)#取栅格内最高点的栅格索引
     PointCloud_frac = PointCloud[indices]
     # some important problem is image coordinate is (y,x), not (x,y)
     max_height = float(np.abs(bc['maxZ'] - bc['minZ']))
@@ -60,12 +60,17 @@ def makeBVFeature(PointCloud_, Discretization, bc):
     intensityMap = np.zeros((Height, Width))
     densityMap = np.zeros((Height, Width))
 
+    # 栅格外按照x、y索引排序，栅格内按照强度排序
+    indices = np.lexsort((-PointCloud[:, 3], PointCloud[:, 1], PointCloud[:, 0]))
+    PointCloud = PointCloud[indices]
+
+    # indices 取栅格内最高点的栅格索引  counts 栅格内点数量
     _, indices, counts = np.unique(PointCloud[:, 0:2], axis=0, return_index=True, return_counts=True)
     PointCloud_top = PointCloud[indices]
 
     normalizedCounts = np.minimum(1.0, np.log(counts + 1) / np.log(64))
 
-    intensityMap[np.int_(PointCloud_top[:, 0]), np.int_(PointCloud_top[:, 1])] = PointCloud_top[:, 3]
+    intensityMap[np.int_(PointCloud_top[:, 0]), np.int_(PointCloud_top[:, 1])] = PointCloud_top[:, 3]#最高点强度
     densityMap[np.int_(PointCloud_top[:, 0]), np.int_(PointCloud_top[:, 1])] = normalizedCounts
 
     RGB_Map = np.zeros((3, Height - 1, Width - 1))
