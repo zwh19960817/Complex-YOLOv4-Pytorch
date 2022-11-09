@@ -146,7 +146,7 @@ def main_worker(gpu_idx, configs):
             train_sampler.set_epoch(epoch)
         # train for one epoch
         train_one_epoch(train_dataloader, model, optimizer, lr_scheduler, epoch, configs, logger, tb_writer)
-        if not configs.no_val:
+        if not configs.no_val and (epoch > 20):
             val_dataloader = create_val_dataloader(configs)
             print('number of batches in val_dataloader: {}'.format(len(val_dataloader)))
             precision, recall, AP, f1, ap_class = evaluate_mAP(val_dataloader, model, configs, logger)
