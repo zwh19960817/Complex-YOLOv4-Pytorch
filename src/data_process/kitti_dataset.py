@@ -238,10 +238,33 @@ class KittiDataset(Dataset):
         # assert os.path.isfile(img_file)
         return cv2.imread(img_file)  # (H, W, C) -> (H, W, 3) OpenCV reads in BGR mode
 
+    def load_pcd_data_xyzi(self,file_path):
+        pts = []
+        f = open(file_path, 'r')
+        data = f.readlines()
+        f.close()
+        line = data[9]
+        # print line
+        line = line.strip('\n')
+        i = line.split(' ')
+        pts_num = eval(i[-1])
+        for line in data[11:]:
+            line = line.strip('\n')
+            xyzi = line.split(' ')
+            x, y, z,intensity = [eval(i) for i in xyzi[:4]]
+            pts.append([x, y, z, intensity])
+        # pts.append()
+        assert len(pts) == pts_num
+        res = np.zeros((pts_num, len(pts[0])), dtype=np.float)
+        for i in range(pts_num):
+            res[i] = pts[i]
+        return res
+
     def get_lidar(self, idx):
-        lidar_file = os.path.join(self.lidar_dir, '{:06d}.bin'.format(idx))
+        lidar_file = os.path.join(self.lidar_dir, '{:06d}.pcd'.format(idx))
         # assert os.path.isfile(lidar_file)
-        return np.fromfile(lidar_file, dtype=np.float32).reshape(-1, 4)
+        # return np.fromfile(lidar_file, dtype=np.float32).reshape(-1, 4)
+        return self.load_pcd_data_xyzi(lidar_file)
 
     def get_calib(self, idx):
         calib_file = os.path.join(self.calib_dir, '{:06d}.txt'.format(idx))
