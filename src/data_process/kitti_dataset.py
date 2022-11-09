@@ -91,13 +91,14 @@ class KittiDataset(Dataset):
 
         lidarData = self.get_lidar(sample_id)
         objects = self.get_label(sample_id)
-        calib = self.get_calib(sample_id)
+        # calib = self.get_calib(sample_id)
 
+        # labels=[class_id + 7个三维信息]
         labels, noObjectLabels = kitti_bev_utils.read_labels_for_bevbox(objects)
 
-        if not noObjectLabels:
-            labels[:, 1:] = transformation.camera_to_lidar_box(labels[:, 1:], calib.V2C, calib.R0,
-                                                               calib.P)  # convert rect cam to velo cord
+        # if not noObjectLabels:
+        #     labels[:, 1:] = transformation.camera_to_lidar_box(labels[:, 1:], calib.V2C, calib.R0,
+        #                                                        calib.P)  # convert rect cam to velo cord
 
         if self.lidar_transforms is not None:
             lidarData, labels[:, 1:] = self.lidar_transforms(lidarData, labels[:, 1:])
@@ -182,11 +183,11 @@ class KittiDataset(Dataset):
         for sample_id in image_idx_list:
             sample_id = int(sample_id)
             objects = self.get_label(sample_id)
-            calib = self.get_calib(sample_id)
+            # calib = self.get_calib(sample_id)
             labels, noObjectLabels = kitti_bev_utils.read_labels_for_bevbox(objects)
-            if not noObjectLabels:
-                labels[:, 1:] = transformation.camera_to_lidar_box(labels[:, 1:], calib.V2C, calib.R0,
-                                                                   calib.P)  # convert rect cam to velo cord
+            # if not noObjectLabels:
+            #     labels[:, 1:] = transformation.camera_to_lidar_box(labels[:, 1:], calib.V2C, calib.R0,
+            #                                                        calib.P)  # convert rect cam to velo cord
 
             valid_list = []
             for i in range(labels.shape[0]):

@@ -124,7 +124,7 @@ if __name__ == '__main__':
     configs = edict(vars(parser.parse_args()))
     configs.distributed = False  # For testing
     configs.pin_memory = False
-    configs.dataset_dir = os.path.join('../../', 'dataset', 'kitti')
+    configs.dataset_dir = os.path.join('../../', 'dataset', 'kitti_my')
 
     if configs.save_img:
         print('saving validation images')
@@ -142,13 +142,6 @@ if __name__ == '__main__':
     print('\n\nPress n to see the next sample >>> Press Esc to quit...')
 
     for batch_i, (img_files, imgs, targets) in enumerate(dataloader):
-        if not (configs.mosaic and configs.show_train_data):
-            img_file = img_files[0]
-            img_rgb = cv2.imread(img_file)
-            calib = kitti_data_utils.Calibration(img_file.replace(".png", ".txt").replace("image_2", "calib"))
-            objects_pred = invert_target(targets[:, 1:], calib, img_rgb.shape, RGB_Map=None)
-            img_rgb = show_image_with_boxes(img_rgb, objects_pred, calib, False)
-
         # Rescale target
         targets[:, 2:6] *= configs.img_size
         # Get yaw angle
@@ -164,19 +157,7 @@ if __name__ == '__main__':
 
         img_bev = cv2.rotate(img_bev, cv2.ROTATE_180)
 
-        if configs.mosaic and configs.show_train_data:
-            if configs.save_img:
-                fn = os.path.basename(img_file)
-                cv2.imwrite(os.path.join(configs.saved_dir, fn), img_bev)
-            else:
-                cv2.imshow('mosaic_sample', img_bev)
-        else:
-            out_img = merge_rgb_to_bev(img_rgb, img_bev, output_width=configs.output_width)
-            if configs.save_img:
-                fn = os.path.basename(img_file)
-                cv2.imwrite(os.path.join(configs.saved_dir, fn), out_img)
-            else:
-                cv2.imshow('single_sample', out_img)
+        cv2.imshow('mosaic_sample', img_bev)
 
         if not configs.save_img:
             if cv2.waitKey(0) & 0xff == 27:

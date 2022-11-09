@@ -14,32 +14,32 @@ class Object3d(object):
     ''' 3d object label '''
 
     def __init__(self, label_file_line):
-        data = label_file_line.split(' ')
+        data = label_file_line.split('\t')#以tap划分
         data[1:] = [float(x) for x in data[1:]]
         # extract label, truncation, occlusion
         self.type = data[0]  # 'Car', 'Pedestrian', ...
         self.cls_id = self.cls_type_to_id(self.type)
-        self.truncation = data[1]  # truncated pixel ratio [0..1]
-        self.occlusion = int(data[2])  # 0=visible, 1=partly occluded, 2=fully occluded, 3=unknown
-        self.alpha = data[3]  # object observation angle [-pi..pi]
+        # self.truncation = data[1]  # truncated pixel ratio [0..1]
+        self.occlusion = int(data[1])  # 0=visible, 1=partly occluded, 2=fully occluded, 3=unknown
+        self.alpha = data[8]  # object observation angle [-pi..pi]
 
         # extract 2d bounding box in 0-based coordinates
-        self.xmin = data[4]  # left
-        self.ymin = data[5]  # top
-        self.xmax = data[6]  # right
-        self.ymax = data[7]  # bottom
-        self.box2d = np.array([self.xmin, self.ymin, self.xmax, self.ymax])
+        # self.xmin = data[4]  # left
+        # self.ymin = data[5]  # top
+        # self.xmax = data[6]  # right
+        # self.ymax = data[7]  # bottom
+        # self.box2d = np.array([self.xmin, self.ymin, self.xmax, self.ymax])
 
         # extract 3d bounding box information
-        self.h = data[8]  # box height
-        self.w = data[9]  # box width
-        self.l = data[10]  # box length (in meters)
-        self.t = (data[11], data[12], data[13])  # location (x,y,z) in camera coord.
-        self.dis_to_cam = np.linalg.norm(self.t)
-        self.ry = data[14]  # yaw angle (around Y-axis in camera coordinates) [-pi..pi]
-        self.score = data[15] if data.__len__() == 16 else -1.0
-        self.level_str = None
-        self.level = self.get_obj_level()
+        self.h = data[4]  # box height
+        self.w = data[3]  # box width
+        self.l = data[2]  # box length (in meters)
+        self.t = (data[5], data[6], data[7])  # location (x,y,z) in camera coord.
+        # self.dis_to_cam = np.linalg.norm(self.t)
+        self.ry = data[9]/57.3  # yaw angle (around Y-axis in camera coordinates) [-pi..pi]
+        # self.score = data[15] if data.__len__() == 16 else -1.0
+        # self.level_str = None
+        # self.level = self.get_obj_level()
 
     def cls_type_to_id(self, cls_type):
         # Car and Van ==> Car class
