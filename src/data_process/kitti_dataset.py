@@ -252,7 +252,7 @@ class KittiDataset(Dataset):
             line = line.strip('\n')
             xyzi = line.split(' ')
             x, y, z,intensity = [eval(i) for i in xyzi[:4]]
-            pts.append([x, y, z, intensity])
+            pts.append([x, y, z, intensity/255.0])
         # pts.append()
         assert len(pts) == pts_num
         res = np.zeros((pts_num, len(pts[0])), dtype=np.float)

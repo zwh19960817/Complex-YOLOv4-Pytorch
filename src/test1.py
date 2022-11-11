@@ -34,7 +34,7 @@ def parse_test_configs():
                         help='The name of the model architecture')
     parser.add_argument('--cfgfile', type=str, default='./config/cfg/complex_yolov4.cfg', metavar='PATH',
                         help='The path for cfgfile (only for darknet)')
-    parser.add_argument('--pretrained_path', type=str, default='/home/zwh/work_space/18xx/Complex-YOLOv4-Pytorch/checkpoints/complex_yolov4/complex_yolov4_mse_loss.pth', metavar='PATH',
+    parser.add_argument('--pretrained_path', type=str, default='/home/zwh/work_space/18xx/Complex-YOLOv4-Pytorch/checkpoints/complexer_yolo/Model_complexer_yolo_epoch_10000.pth', metavar='PATH',
                         help='the path of the pretrained checkpoint')
     parser.add_argument('--use_giou_loss', action='store_true',
                         help='If true, use GIoU loss during training. If false, use MSE loss for training')
@@ -113,8 +113,8 @@ def pc_tf(pc):
     # extrinsic 中旋转的表达形式为旋转矩阵
     # pc shape (n , 3)
     # extrinsic shape (4, 4)
-    # R = np.array([[0.000796274,-1,0,0],[1,0.000796274,0,0],[0,0,1,0],[0,0,0,1]],dtype='float32')#yaw=1.57 hs
-    R = np.array([[0.000796274,1,0,0],[-1,0.000796274,0,0],[0,0,1,0],[0,0,0,1]],dtype='float32')#yaw=-1.57 ls
+    R = np.array([[0.000796274,-1,0,0],[1,0.000796274,0,0],[0,0,1,0],[0,0,0,1]],dtype='float32')#yaw=1.57 hs
+    # R = np.array([[0.000796274,1,0,0],[-1,0.000796274,0,0],[0,0,1,0],[0,0,0,1]],dtype='float32')#yaw=-1.57 ls
     # R = np.array([[1,0,0,0],[0,1,0,0],[0,0,1,0],[0,0,0,1]],dtype='float32')
 
     T = np.array([0,0,-0.8,0],dtype='float32')
@@ -176,7 +176,7 @@ def listener():
     # run simultaneously.
     rospy.init_node('listener', anonymous=True)
 
-    rospy.Subscriber("/pointcloud_lidar_ls1280", PointCloud2, callback)
+    rospy.Subscriber("/pointcloud_Pandar640", PointCloud2, callback)
 
     # spin() simply keeps python from exiting until this node is stopped
     rospy.spin()

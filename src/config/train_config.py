@@ -61,7 +61,7 @@ def parse_train_configs():
                         help='If true, dont evaluate the model on the val set')
     parser.add_argument('--num_samples', type=int, default=None,
                         help='Take a subset of the dataset to run and debug')
-    parser.add_argument('--num_workers', type=int, default=4,
+    parser.add_argument('--num_workers', type=int, default=2,
                         help='Number of threads for loading data')
     parser.add_argument('--batch_size', type=int, default=4,
                         help='mini-batch size (default: 4), this is the total'
@@ -71,7 +71,7 @@ def parse_train_configs():
                         help='print frequency (default: 50)')
     parser.add_argument('--tensorboard_freq', type=int, default=50, metavar='N',
                         help='frequency of saving tensorboard (default: 50)')
-    parser.add_argument('--checkpoint_freq', type=int, default=5, metavar='N',
+    parser.add_argument('--checkpoint_freq', type=int, default=10, metavar='N',
                         help='frequency of saving checkpoints (default: 5)')
     ####################################################################
     ##############     Training strategy            ####################
@@ -149,7 +149,7 @@ def parse_train_configs():
     ####################################################################
     ############## Dataset, logs, Checkpoints dir ######################
     ####################################################################
-    configs.dataset_dir = os.path.join(configs.working_dir, 'dataset', 'kitti_my')
+    configs.dataset_dir = os.path.join(configs.working_dir, 'dataset', 'hs64')
     configs.checkpoints_dir = os.path.join(configs.working_dir, 'checkpoints', configs.saved_fn)
     configs.logs_dir = os.path.join(configs.working_dir, 'logs', configs.saved_fn)
 

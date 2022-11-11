@@ -88,14 +88,14 @@ def main_worker(gpu_idx, configs):
     # load weight from a checkpoint
     if configs.pretrained_path is not None:
         assert os.path.isfile(configs.pretrained_path), "=> no checkpoint found at '{}'".format(configs.pretrained_path)
-        model.load_state_dict(torch.load(configs.pretrained_path))
+        model.load_state_dict(torch.load(configs.pretrained_path,map_location='cuda:0'))#map_location 防止训练和测试的GPD id不同
         if logger is not None:
             logger.info('loaded pretrained model at {}'.format(configs.pretrained_path))
 
     # resume weights of model from a checkpoint
     if configs.resume_path is not None:
         assert os.path.isfile(configs.resume_path), "=> no checkpoint found at '{}'".format(configs.resume_path)
-        model.load_state_dict(torch.load(configs.resume_path))
+        model.load_state_dict(torch.load(configs.resume_path,map_location='cuda:0'))
         if logger is not None:
             logger.info('resume training model from checkpoint {}'.format(configs.resume_path))
 
@@ -135,6 +135,8 @@ def main_worker(gpu_idx, configs):
         print('mAP {}'.format(AP.mean()))
         return
 
+    best_fitness = 0
+    map = 0
     for epoch in range(configs.start_epoch, configs.num_epochs + 1):
         if logger is not None:
             logger.info('{}'.format('*-' * 40))
@@ -157,13 +159,19 @@ def main_worker(gpu_idx, configs):
                 'f1': f1.mean(),
                 'ap_class': ap_class.mean()
             }
+            map = AP.mean()
             if tb_writer is not None:
                 tb_writer.add_scalars('Validation', val_metrics_dict, epoch)
+            print("eval output ", map, " ", best_fitness)
 
         # Save checkpoint
-        if configs.is_master_node and ((epoch % configs.checkpoint_freq) == 0):
-            model_state_dict, utils_state_dict = get_saved_state(model, optimizer, lr_scheduler, epoch, configs)
-            save_checkpoint(configs.checkpoints_dir, configs.saved_fn, model_state_dict, utils_state_dict, epoch)
+        if configs.is_master_node and (((epoch % configs.checkpoint_freq) == 0) or (best_fitness < map)):
+            save_epoch = epoch
+            if best_fitness < map:
+                best_fitness = map
+                save_epoch = 10000
+            model_state_dict, utils_state_dict = get_saved_state(model, optimizer, lr_scheduler, save_epoch, configs)
+            save_checkpoint(configs.checkpoints_dir, configs.saved_fn, model_state_dict, utils_state_dict, save_epoch)
 
         if not configs.step_lr_in_epoch:
             lr_scheduler.step()

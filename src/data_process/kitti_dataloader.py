@@ -124,7 +124,7 @@ if __name__ == '__main__':
     configs = edict(vars(parser.parse_args()))
     configs.distributed = False  # For testing
     configs.pin_memory = False
-    configs.dataset_dir = os.path.join('../../', 'dataset', 'kitti_my')
+    configs.dataset_dir = os.path.join('../../', 'dataset', 'hs64')
 
     if configs.save_img:
         print('saving validation images')
